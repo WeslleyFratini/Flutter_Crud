@@ -1,6 +1,4 @@
-# flutter_crud
-
-A new Flutter project.
+# Cadastro completo
 
 ## Getting Started
 
