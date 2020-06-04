@@ -25,4 +25,11 @@ const DUMMY_USERS = {
   email: 'gabi@gabi.com.br',
   avatarUrl: 'https://cdn.pixabay.com/photo/2014/04/02/17/07/user-307993_960_720.png'
 ),
+'5': const User(
+  id:'5',
+  name: 'Pepe',
+  email: 'pepe@pepe.com.br',
+  avatarUrl: 'https://cdn.pixabay.com/photo/2016/02/11/17/00/dog-1194087_1280.jpg'
+),
+
 };
