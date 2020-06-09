@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_crud/models/user.dart';
 import 'package:flutter_crud/provider/users.dart';
 import 'package:provider/provider.dart';
+class UserForm extends StatefulWidget {
+  @override
+  _UserFormState createState() => _UserFormState();
+}
+class _UserFormState extends State<UserForm> {
+  final _form = GlobalKey<FormState>();
 
-class UserForm extends StatelessWidget {
-final _form =GlobalKey<FormState>();
+  bool _isLoading = false;
+
 final Map<String, String> _formData={};
 
 void _loadFormData(user){
@@ -28,13 +34,18 @@ void _loadFormData(user){
 actions: <Widget>[
   IconButton(
   icon: Icon(Icons.save),
-    onPressed: () {
+    onPressed: () async {
       final isValid = _form.currentState.validate();
 
       if(isValid){
         _form.currentState.save();
        
-        Provider.of<Users>(context,listen:false).put(User(
+      setState(() {
+          _isLoading = true;
+        });
+
+        await Provider.of<Users>(context,listen:false).put
+        (User(
         id:_formData['id'],
         name:_formData['name'],
         email:_formData['email'],
@@ -42,13 +53,19 @@ actions: <Widget>[
         )
         );
 
+       setState(() {
+          _isLoading = false;
+        });
+
         Navigator.of(context).pop();
       }      
         },
       ),
      ],    
     ),
-    body: Padding(
+    body: _isLoading
+    ? Center (child: CircularProgressIndicator())
+     : Padding(
       padding: EdgeInsets.all(15),
       child: Form(
         key:_form,

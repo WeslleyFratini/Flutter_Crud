@@ -1,10 +1,12 @@
-import 'dart:math';
-
-import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:flutter/material.dart' show ChangeNotifier;
 import 'package:flutter_crud/data/dummy_user.dart';
 import 'package:flutter_crud/models/user.dart';
+import 'package:http/http.dart' as http;
 
 class Users with ChangeNotifier{
+
+  static const _baseUrl = 'https://listacontatosflutter.firebaseio.com/';
   final Map<String, User> _items = {...DUMMY_USERS};
 
   List<User> get all {
@@ -19,7 +21,7 @@ class Users with ChangeNotifier{
     return _items.values.elementAt(i);
   }
 
-  void put(User user){
+  Future <void> put(User user) async{
     if(user == null){
       return;
     }
@@ -27,7 +29,19 @@ class Users with ChangeNotifier{
     if(user.id != null && 
     user.id.trim().isNotEmpty && 
     _items.containsKey(user.id)){
-    _items.update(user.id, (_) => User(
+
+      await http.patch(
+      "$_baseUrl/users/${user.id}.json",
+      body: json.encode({    
+    'name': user.name,
+    'email': user.email,
+    'avatarUrl': user.avatarUrl,
+      }),
+      );
+
+    _items.update(
+      user.id, 
+      (_) => User(
       id: user.id,
       name: user.name,
       email: user.email,
@@ -35,10 +49,21 @@ class Users with ChangeNotifier{
       
     ));
     }else{
+     final response = await http.post(
+        "$_baseUrl/users.json",
+      body: json.encode({    
+    'name': user.name,
+    'email': user.email,
+    'avatarUrl': user.avatarUrl,
+      }),
+      );
 
         //Adicionar
-    final id = Random().nextDouble().toString();    
-    _items.putIfAbsent(id, () => User(
+    final id = json.decode(response.body)['name'];
+    print(json.decode(response.body));
+    _items.putIfAbsent(
+    id, 
+    () => User(
     id: id,
     name: user.name,
     email: user.email,
